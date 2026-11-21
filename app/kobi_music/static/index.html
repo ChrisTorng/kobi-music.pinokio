@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kobi Music Toolkit</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="/"><span class="mark" aria-hidden="true">♫</span>Kobi Music Toolkit</a>
+    <nav aria-label="開發者工具"><a href="/docs">API 文件</a></nav>
+  </header>
+  <main class="layout">
+    <aside class="sidebar">
+      <nav class="tools" aria-label="工作流程">
+        <button type="button" data-task="transcribe"><b>錄音轉 MIDI</b><span>Dettato</span></button>
+        <button type="button" data-task="scan"><b>掃描五線譜</b><span>Copista</span></button>
+        <button type="button" data-task="quantize"><b>MIDI 量化</b><span>拍點與樂譜</span></button>
+        <button type="button" data-task="render"><b>樂譜／MIDI 轉音檔</b><span>SoundFont</span></button>
+      </nav>
+      <section class="history" aria-labelledby="history-title">
+        <h2 id="history-title">最近工作</h2>
+        <ul id="history-list"></ul>
+      </section>
+    </aside>
+    <section class="workspace" aria-labelledby="tool-title">
+      <div class="intro"><h1 id="tool-title"></h1><p id="tool-description"></p></div>
+      <div class="workspace-columns">
+        <form id="job-form" class="card">
+          <label class="dropzone" id="dropzone">
+            <input type="file" id="input-file" name="file" required>
+            <strong id="file-name">選擇要處理的檔案</strong>
+            <span id="formats"></span>
+          </label>
+          <section id="scan-options" class="section" hidden>
+            <h2>掃描設定</h2>
+            <div class="fields">
+              <label>PDF 頁碼<input name="pages" placeholder="全部頁面" pattern="[1-9][0-9]*(?:-[1-9][0-9]*)?"></label>
+              <label>辨識模型<select name="detector"><option value="28m">Copista 28M</option><option value="2m">Copista 2M</option></select></label>
+            </div>
+          </section>
+          <details id="tempo-options" class="section" hidden>
+            <summary>拍點與量化</summary>
+            <div class="fields">
+              <label>量化粒度<select name="grid"><option value="">保留原始時間</option><option value="eighth">八分音符</option><option value="sixteenth">十六分音符</option><option value="eighth-triplet">八分三連音</option><option value="sixteenth-triplet">十六分三連音</option><option value="thirty-second">三十二分音符</option></select></label>
+              <label>量化強度（%）<input name="strength" type="number" min="0" max="100" value="100"></label>
+              <label>固定速度 BPM<input name="bpm" type="number" min="20" max="360" step="any" placeholder="例如 135"></label>
+              <label>第一個小節強拍（秒）<input name="downbeat" type="number" min="0" step="any" placeholder="0" disabled></label>
+              <label>拍號<input name="meter" placeholder="例如 4/4"></label>
+            </div>
+            <label class="wide">變速拍點 JSON<textarea name="beats" rows="2" placeholder="[0.0, 0.5, 1.02, 1.57]"></textarea></label>
+            <p class="hint">提供四分音符拍點的秒數即可保留變速。固定 BPM 與拍點擇一。</p>
+            <label class="check"><input name="sheet" type="checkbox">同時輸出 MusicXML（使用 MuseScore）</label>
+          </details>
+          <section class="section" id="audio-section">
+            <h2>音檔輸出</h2>
+            <label id="also-audio" class="check"><input name="render" type="checkbox">同時渲染音檔</label>
+            <div id="render-options">
+              <div class="fields">
+                <label>音色庫<select name="bank"><option value="builtin">MuseScore General（GM）</option><option value="kobi-microscopic">Kobi Microscopic（GM）</option><option value="upload">上傳 SF2／SF3</option><option value="url">從 HTTPS 網址載入</option></select></label>
+                <label>輸出格式<select name="audio_format"><option value="wav">WAV</option><option value="flac">FLAC</option><option value="mp3">MP3</option></select></label>
+              </div>
+              <label id="font-file" class="wide" hidden>自訂音色庫<input name="soundfont" type="file" accept=".sf2,.sf3"></label>
+              <label id="font-url" class="wide" hidden>SoundFont 網址<input name="soundfont_url" type="url" placeholder="https://example.org/bank.sf2"></label>
+            </div>
+          </section>
+          <button id="submit" class="primary" type="submit">開始處理</button>
+          <p id="form-message" role="alert" hidden></p>
+        </form>
+        <section class="card results" aria-labelledby="result-title">
+          <div class="result-header"><h2 id="result-title">輸出</h2><span class="status" id="status" role="status">等待檔案</span></div>
+          <div id="result-body" aria-live="polite"><p class="empty">完成後可在這裡預覽樂譜、試聽音檔及下載輸出。</p></div>
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

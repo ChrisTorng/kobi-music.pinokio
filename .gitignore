@@ -1,0 +1,7 @@
+/.venv/
+/app/.venv/
+/app/runtime/
+**/__pycache__/
+*.egg-info/
+/logs/
+/ENVIRONMENT

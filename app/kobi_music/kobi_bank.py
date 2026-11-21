@@ -161,7 +161,7 @@ def render(source, archive_path, destination, rate=44100):
     peak = float(np.abs(mix).max())
     if not peak:
         raise ValueError('The selected bank produced no audible notes.')
-    scale = min(.38, .95 / peak) * 32767
+    scale = 10 ** (-3 / 20) * 32767 / peak
     with wave.open(str(destination), 'wb') as audio:
         audio.setparams((2, 2, rate, 0, 'NONE', 'not compressed'))
         for start in range(0, len(mix), rate):

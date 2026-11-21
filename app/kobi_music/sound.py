@@ -5,6 +5,7 @@ from http.client import HTTPSConnection
 from ipaddress import ip_address
 from pathlib import Path
 import socket
+from tempfile import TemporaryFile
 import wave
 from urllib.parse import quote, urljoin, urlsplit
 
@@ -94,15 +95,16 @@ def render(midi_path, font_path, output, *, rate=44100):
             fallbacks.add(f'Channel {channel + 1} has no matching preset in the SoundFont.')
             synth.program_select(channel, font_id, 0, default_program)
 
-    with wave.open(str(output), 'wb') as wav:
-        wav.setparams((2, 2, rate, 0, 'NONE', 'not compressed'))
+    with TemporaryFile() as samples_file:
+        peak = 0.0
 
         def emit(frames):
+            nonlocal peak
             while frames > 0:
                 block = min(frames, rate)
                 samples = np.frombuffer(synth.generate_simple(block), dtype=np.float32)
-                pcm = (np.clip(samples, -1, 1) * 32767).astype('<i2')
-                wav.writeframesraw(pcm.tobytes())
+                peak = max(peak, float(np.abs(samples).max()))
+                samples_file.write(samples.tobytes())
                 frames -= block
 
         elapsed = 0.0
@@ -130,4 +132,13 @@ def render(midi_path, font_path, output, *, rate=44100):
                 synth.pitchbend(channel, message.pitch + 8192)
         synth.notes_off()
         emit(rate)
+        if peak <= 1e-8 or not np.isfinite(peak):
+            raise ValueError('The selected SoundFont produced no audible notes.')
+        samples_file.seek(0)
+        scale = 10 ** (-3 / 20) * 32767 / peak
+        with wave.open(str(output), 'wb') as wav:
+            wav.setparams((2, 2, rate, 0, 'NONE', 'not compressed'))
+            while data := samples_file.read(rate * 8):
+                samples = np.frombuffer(data, dtype=np.float32)
+                wav.writeframesraw((samples * scale).astype('<i2').tobytes())
     return sorted(fallbacks)

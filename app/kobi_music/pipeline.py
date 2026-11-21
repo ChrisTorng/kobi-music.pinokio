@@ -106,7 +106,7 @@ def preview_score(source, destination):
     import verovio
 
     score = verovio.toolkit()
-    score.setOptions({'pageWidth': 1600, 'pageHeight': 2200, 'scale': 40})
+    score.setOptions({'pageWidth': 1600, 'pageHeight': 2200, 'scale': 40, 'adjustPageHeight': True})
     if score.loadFile(str(source)) and score.getPageCount():
         destination.write_text(score.renderToSVG(1), encoding='utf-8')
 

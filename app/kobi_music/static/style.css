@@ -74,7 +74,8 @@ input[type="checkbox"] { accent-color: var(--accent); }
 .files a:hover { background: #233346; }
 .warning { padding: 10px; margin-top: 10px; border-left: 2px solid #dfb784; color: #f1d8b9; background: #302a29; font-size: 13px; }
 .results audio { width: 100%; margin-bottom: 10px; }
-.results img { display: block; width: 100%; margin-bottom: 10px; background: #fff; border-radius: 5px; }
+.sheet-preview { max-height: 360px; overflow: auto; margin-bottom: 10px; border-radius: 5px; background: #fff; }
+.sheet-preview img { display: block; width: 100%; }
 .results table { margin: 12px 0; width: 100%; border-collapse: collapse; font-size: 13px; }
 .results td, .results th { border-bottom: 1px solid var(--line); padding: 5px 4px; text-align: left; }
 .results th { color: var(--muted); }

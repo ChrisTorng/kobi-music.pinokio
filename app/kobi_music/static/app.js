@@ -110,7 +110,7 @@ function showJob(job) {
     player.setAttribute('aria-label', name);
   }
   if (job.files.includes('score-preview.svg')) {
-    const preview = add(result, 'img');
+    const preview = add(add(result, 'div', null, 'sheet-preview'), 'img');
     preview.src = path + 'score-preview.svg';
     preview.alt = '樂譜第一頁預覽';
   }

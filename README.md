@@ -32,6 +32,8 @@ The default is **MuseScore General**, a GM SF3 bank based on FluidR3, available 
 
 The original Kobi Microscopic archive contains its `ATTRIBUTION.md`. The download is made during installation and the audio assets aren't in this Git repository. Kobi Slim v2 has different attribution requirements and some samples with uncertain provenance. The app doesn't install that bank.
 
+Rendered copies use a single peak gain per file (−3 dBFS) so quiet SoundFonts remain audible while the relative musical dynamics stay intact. Uploaded and downloaded SF2/SF3 banks can be up to 256 MiB.
+
 ## CLI
 
 Run `kobi-music` from `app/.venv` (`Scripts/kobi-music.exe` on Windows, `bin/kobi-music` on Linux). Commands write JSON to stdout and logs in the output directory. Choose a new or empty output directory.

@@ -118,7 +118,7 @@ def inspect(path):
         notes = [message for message in track if message.type == 'note_on' and message.velocity]
         if notes:
             velocities = [note.velocity for note in notes]
-            tracks.append({'name': track.name, 'notes': len(notes), 'velocity_range': [min(velocities), max(velocities)],
+            tracks.append({'name': track.name.rstrip('\x00'), 'notes': len(notes), 'velocity_range': [min(velocities), max(velocities)],
                            'programs': sorted({m.program for m in track if m.type == 'program_change'}),
                            'drums': any(note.channel == 9 for note in notes)})
     return {'seconds': round(elapsed, 3), 'tempos': tempo, 'meters': meter, 'tracks': tracks}
@@ -139,13 +139,14 @@ def pulse_suggestions(path):
     events = drums if len(drums) >= 16 else times
     candidates = []
     if len(events) >= 16 and events[-1] - events[0] >= 8:
-        hz = 100
+        hz = 200
         bins = np.bincount(np.rint(np.asarray(events) * hz).astype(int))
         signal = np.minimum(bins, 3).astype(float)
         signal -= signal.mean()
         freq = np.fft.rfft(signal, n=2 * len(signal))
         corr = np.fft.irfft(abs(freq) ** 2)
-        lags = [lag for lag in range(28, 133) if corr[lag] >= max(corr[lag - 1], corr[lag + 1]) and corr[lag] > 0]
+        lags = [lag for lag in range(round(60 * hz / 215), round(60 * hz / 45))
+                if corr[lag] >= max(corr[lag - 1], corr[lag + 1]) and corr[lag] > 0]
         for lag in sorted(lags, key=lambda i: corr[i], reverse=True)[:5]:
             left, center, right = corr[lag - 1:lag + 2]
             curvature = left - 2 * center + right

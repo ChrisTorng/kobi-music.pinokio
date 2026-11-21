@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 import re
 import shutil
+import subprocess
+import sys
 import time
 from urllib.parse import urlsplit
 from uuid import uuid4
@@ -139,6 +141,23 @@ async def start_job(task: str = Form(...), file: UploadFile = File(...),
 
 
 def work(folder, source, font, options):
+    try:
+        with (folder / 'worker.log').open('w', encoding='utf-8') as log:
+            result = subprocess.run([sys.executable, '-m', 'kobi_music.job_worker', str(folder), str(source),
+                                     str(font) if font else ''], input=options.model_dump_json().encode('utf-8'),
+                                    stdout=log, stderr=subprocess.STDOUT, timeout=3600, check=False)
+        if result.returncode:
+            raise RuntimeError(f'Worker exited with code {result.returncode}. See the job log.')
+    except (OSError, RuntimeError, subprocess.SubprocessError) as error:
+        worker_log = folder / 'worker.log'
+        with (folder / 'log.txt').open('a', encoding='utf-8') as log:
+            if worker_log.is_file():
+                log.write(worker_log.read_text(encoding='utf-8', errors='replace'))
+            log.write(f'\n{error}\n')
+        save_state(folder, dict(read_state(folder), status='failed', stage='Failed', error=str(error)))
+
+
+def run_job(folder, source, font, options):
     job = read_state(folder)
 
     def progress(stage):

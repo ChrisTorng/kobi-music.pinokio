@@ -4,6 +4,7 @@ const WORKFLOWS = {
   transcribe: ['錄音轉多軌 MIDI', '保留原演奏時間，可另做量化、輸出樂譜或試聽。', '.wav,.flac,.mp3,.m4a,.aac,.aif,.aiff,.ogg,.opus'],
   scan: ['五線譜辨識', '從掃描譜建立 MusicXML 與 MIDI。PDF 頁碼留空會讀取全部頁面。', '.pdf,.png,.jpg,.jpeg,.webp,.tif,.tiff'],
   quantize: ['MIDI 量化與排譜', '依原有速度或指定拍點校正音符。保留原本的音色與力度。', '.mid,.midi'],
+  convert: ['樂譜與 MIDI 互轉', '從 MuseScore 或 MusicXML 樂譜匯出 MIDI，也可把 MIDI 轉成可編輯的 MusicXML。', '.musicxml,.xml,.mxl,.mscz,.mscx,.mid,.midi'],
   render: ['樂譜與 MIDI 轉音檔', '可載入 MusicXML、MuseScore 樂譜或 MIDI，選擇 SoundFont 後離線合成。', '.musicxml,.xml,.mxl,.mscz,.mscx,.mid,.midi'],
 };
 const STAGES = {
